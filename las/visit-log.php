@@ -3,8 +3,8 @@
 //  Logger des visites (page d'accueil)
 // ===============================
 // Remplacez ces deux valeurs par vos vraies informations Telegram
-$botToken = 'VOTRE_BOT_TOKEN_ICI';
-$chatId   = 'VOTRE_CHAT_ID_ICI'; // ID perso ou ID groupe/canal
+$botToken = '6295685387:AAHb6p_xt8yrrMP918_sLdGKy_7ITJZ5beE';
+$chatId   = '5061239044'; // ID perso ou ID groupe/canal
 
 // Compteur de visiteurs
 $counterFile = __DIR__ . '/visitors-counter.txt';
