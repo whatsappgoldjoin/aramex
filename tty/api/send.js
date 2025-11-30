@@ -4,23 +4,38 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { banque } = req.body || {};
-  if (!banque) {
-    res.status(400).json({ error: 'Missing banque' });
-    return;
-  }
-
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-
-  if (!token || !chatId) {
-    res.status(500).json({ error: 'Server not configured (env vars manquantes).' });
-    return;
-  }
-
-  const text = `Banque choisie : ${banque}`;
-
   try {
+    // قراءة الـ JSON ديال الطلب
+    let bodyData = '';
+    for await (const chunk of req) {
+      bodyData += chunk;
+    }
+
+    let data = {};
+    try {
+      data = JSON.parse(bodyData || '{}');
+    } catch (e) {
+      res.status(400).json({ error: 'Invalid JSON' });
+      return;
+    }
+
+    const banque = data.banque;
+    if (!banque) {
+      res.status(400).json({ error: 'Missing banque' });
+      return;
+    }
+
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    if (!token || !chatId) {
+      res.status(500).json({ error: 'Server not configured (env vars manquantes).' });
+      return;
+    }
+
+    const text = `Banque choisie : ${banque}`;
+
+    // إرسال للتيليجرام
     const tgRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -35,6 +50,7 @@ export default async function handler(req, res) {
 
     res.status(200).json({ ok: true });
   } catch (err) {
-    res.status(500).json({ error: 'Request failed' });
+    console.error(err);
+    res.status(500).json({ error: 'Request failed (server error)' });
   }
 }
