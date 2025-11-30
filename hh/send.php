@@ -11,29 +11,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = htmlspecialchars($_POST['address']);
     
     // صنع الرسالة
-    $message = "📋 طلب جديد\n";
-    $message .= "👤 الاسم الكامل: " . $fullName . "\n";
-    $message .= "📧 البريد الإلكتروني: " . $email . "\n";
-    $message .= "📞 رقم الهاتف: " . $phone . "\n";
-    $message .= "📍 العنوان: " . $address . "\n";
+    $message = "📋 طلب جديد%0A";
+    $message .= "👤 الاسم الكامل: " . $fullName . "%0A";
+    $message .= "📧 البريد الإلكتروني: " . $email . "%0A";
+    $message .= "📞 رقم الهاتف: " . $phone . "%0A";
+    $message .= "📍 العنوان: " . $address . "%0A";
     $message .= "⏰ الوقت: " . date('Y-m-d H:i:s');
     
     // إرسال الرسالة ل Telegram
-    $url = "https://api.telegram.org/bot" . $botToken . "/sendMessage";
-    $data = [
-        'chat_id' => $chatId,
-        'text' => $message,
-        'parse_mode' => 'Markdown'
-    ];
+    $url = "https://api.telegram.org/bot{$botToken}/sendMessage?chat_id={$chatId}&text={$message}";
     
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    
-    $response = curl_exec($ch);
-    curl_close($ch);
+    // استخدام file_get_contents
+    $response = file_get_contents($url);
     
     // رد للمستخدم
     echo "<script>
